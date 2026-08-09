@@ -8,8 +8,11 @@
     <color name="surface_variant">#2B2E27</color>
     <color name="surface_variant_dark">#363A32</color>
 
-    <color name="surface_glass">#F01F221D</color>
-    <color name="glass_edge">#2EFFFFFF</color>
+    <!-- See values/colors.xml. Dark glass is tinted with the surface rather than with
+         white, so the blur behind it stays legible instead of being washed out. -->
+    <color name="glass_sheen">#A62F332B</color>
+    <color name="surface_glass">#731F221D</color>
+    <color name="glass_edge">#59FFFFFF</color>
 
     <color name="text_primary">#F4F6EE</color>
     <color name="text_secondary">#A4A99A</color>

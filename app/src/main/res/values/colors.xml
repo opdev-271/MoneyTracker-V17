@@ -12,11 +12,23 @@
     <color name="surface_variant">#E7EBDC</color>
     <color name="surface_variant_dark">#DADECB</color>
 
-    <!-- Frosted-glass approximation (no real-time blur at minSdk 24): a translucent
-         surface fill plus a light rim to catch the eye, used only on the most
-         prominent "floating" surface (bottom nav pill). -->
-    <color name="surface_glass">#F2FFFFFF</color>
-    <color name="glass_edge">#40FFFFFF</color>
+    <!-- Frosted glass, used on the app's one genuinely floating surface (the bottom nav
+         pill). The blur itself is real and comes from GlassPanelView sitting behind the
+         pill; these three only supply the material on top of it, so unlike the old fake
+         frost they are deliberately translucent enough to let that blur read through.
+
+         The pill is filled with a gradient from sheen to tint rather than a flat color:
+         a real pane of glass catches more light along its top edge, and that single
+         gradient is most of what separates "glass" from "a translucent rectangle". -->
+    <!-- These are far more transparent than a normal surface, and have to be: at the 70%
+         white this started out at, the blur underneath was mathematically present and
+         visually gone - a 30% contribution from a backdrop that is itself off-white
+         collapses to a flat panel. -->
+    <color name="glass_sheen">#8CFFFFFF</color>
+    <color name="surface_glass">#59FFFFFF</color>
+    <!-- Specular edge. Brighter than a normal hairline on purpose - it is the highlight
+         along the rim of the pane, not a border. -->
+    <color name="glass_edge">#B3FFFFFF</color>
 
     <color name="text_primary">#181A12</color>
     <color name="text_secondary">#7C8074</color>

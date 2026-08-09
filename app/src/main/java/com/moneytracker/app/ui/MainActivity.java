@@ -21,6 +21,7 @@ import com.moneytracker.app.R;
 import com.moneytracker.app.data.entity.Category;
 import com.moneytracker.app.ui.addtransaction.AddTransactionActivity;
 import com.moneytracker.app.ui.onboarding.OnboardingActivity;
+import com.moneytracker.app.ui.widget.GlassPanelView;
 import com.moneytracker.app.util.ElevationShadows;
 import com.moneytracker.app.util.LocaleHelper;
 import com.moneytracker.app.util.OnboardingPrefs;
@@ -53,8 +54,16 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(navHost.getId());
         NavController navController = navHostFragment.getNavController();
 
+        GlassPanelView glassNav = findViewById(R.id.glass_nav);
+        glassNav.setCaptureTarget(navHost);
+        glassNav.setCornerRadius(getResources().getDimension(R.dimen.nav_pill_corner_radius));
+
         bottomNavigation = findViewById(R.id.bottom_navigation);
         NavigationUI.setupWithNavController(bottomNavigation, navController);
+        // Switching tabs replaces the whole backdrop without scrolling it, which is the
+        // one content change the scroll-driven capture cannot see by itself.
+        navController.addOnDestinationChangedListener((controller, destination, arguments) ->
+                glassNav.post(glassNav::capture));
         // Overrides the item listener setupWithNavController installed, but keeps its
         // destination-changed listener (installed separately), so the checked state
         // still tracks navigation. This just adds the per-tab icon animation on top.

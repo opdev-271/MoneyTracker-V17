@@ -10,6 +10,9 @@
          object rather than a clipped rectangle. -->
     <dimen name="card_corner_radius">28dp</dimen>
     <dimen name="card_corner_radius_small">22dp</dimen>
+    <!-- Shared by @drawable/bg_nav_pill and the GlassPanelView drawn behind it; they
+         have to agree or the blur would show past the pill's corners. -->
+    <dimen name="nav_pill_corner_radius">40dp</dimen>
     <dimen name="circle_button_size">56dp</dimen>
     <dimen name="circle_button_icon_size">22dp</dimen>
     <dimen name="list_icon_size">44dp</dimen>

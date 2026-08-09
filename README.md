@@ -65,6 +65,20 @@ No backend/API keys are needed — everything is stored locally in a Room
   Consequence worth knowing: a white card cannot sit on a white surface any
   more, so containers that hold cards use the page color (`bg_sheet`) and rows
   inside white dialogs use a tinted well (`bg_row_light`) instead.
+- The bottom nav pill is real frosted glass, not a translucent fill.
+  `ui/widget/GlassPanelView` sits behind it and samples the fragment container into a
+  1/8-scale bitmap, box-blurs it and paints it back through a filtered `BitmapShader`;
+  the pill's own drawable is only the translucent pane, sheen and specular rim on top.
+  Two things this depends on: the pill's colors have to stay *very* transparent (at 70%
+  white the blur is mathematically there and visually gone), and the capture target must
+  be a sibling — pointing it at the root would recurse and would put the pill in its own
+  reflection. Re-sampling is driven by scroll, layout and destination changes rather than
+  every frame, so content that animates in place without scrolling will hold a stale
+  sample until the next scroll.
+- Dialogs blur the app behind them for real, via `FLAG_BLUR_BEHIND` in
+  `DialogButtonStyler` — the one place Android offers a system-composited blur. It is
+  API 31+ and the platform can refuse it at any time (low-RAM device, battery saver,
+  the "disable window blurs" developer option), so it falls back to the plain dim.
 - `android:elevation` on its own draws **nothing** in this app, which is why the
   hairlines were load-bearing for so long: every raised surface is a plain
   `LinearLayout` over a rounded `<shape>`, and `GradientDrawable` zeroes the

@@ -1,8 +1,11 @@
 package com.moneytracker.app.ui.widget;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.Build;
 import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -27,7 +30,14 @@ public class DialogButtonStyler {
     private DialogButtonStyler() {
     }
 
+    /** Blur radius behind an open dialog, in dp. */
+    private static final float BACKDROP_BLUR_DP = 20f;
+    /** Dim to pair with the blur. Much lighter than the platform default 0.6, which on
+     *  top of a blur reads as a grey sheet rather than as depth. */
+    private static final float BLURRED_DIM_AMOUNT = 0.25f;
+
     public static void style(AlertDialog dialog) {
+        applyBackdropBlur(dialog);
         android.widget.Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         if (negative != null) {
             negative.setTextColor(dialog.getContext().getColor(R.color.text_secondary));
@@ -37,6 +47,39 @@ public class DialogButtonStyler {
             neutral.setTextColor(dialog.getContext().getColor(R.color.expense_red));
         }
         applySurfaceBorder(dialog);
+    }
+
+    /**
+     * Blurs the app behind an open dialog, the one place Android offers a real,
+     * system-composited blur: {@code FLAG_BLUR_BEHIND} applies to a whole window, so it
+     * works for dialogs even though nothing equivalent exists for a view inside a window.
+     *
+     * <p>Available from API 31 and, even there, only when the platform says so -
+     * {@code isCrossWindowBlurEnabled()} returns false on low-RAM devices, while battery
+     * saver is on, and whenever the user has ticked the "disable window blurs" developer
+     * option. It can also flip at runtime. Rather than tracking that, this checks at the
+     * moment the dialog is shown and simply leaves the standard dim in place when blur
+     * is unavailable, so the dialog is never left looking half-finished.
+     */
+    private static void applyBackdropBlur(AlertDialog dialog) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            return;
+        }
+        Window window = dialog.getWindow();
+        if (window == null) {
+            return;
+        }
+        WindowManager windowManager =
+                (WindowManager) dialog.getContext().getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager == null || !windowManager.isCrossWindowBlurEnabled()) {
+            return;
+        }
+        float density = dialog.getContext().getResources().getDisplayMetrics().density;
+        window.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        attributes.setBlurBehindRadius((int) (BACKDROP_BLUR_DP * density));
+        attributes.dimAmount = BLURRED_DIM_AMOUNT;
+        window.setAttributes(attributes);
     }
 
     /**
